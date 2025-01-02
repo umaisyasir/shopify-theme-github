@@ -1,0 +1,294 @@
+<div class="job-listing-section">
+  <!-- Section Heading -->
+  <div class="section-heading" id="job-section-heading">
+    <h1>{{ section.settings.job_section_heading }}</h1>
+  </div>
+
+  {% if section.blocks.size > 0 %}
+    <!-- Job Listings -->
+    <div class="job-listings">
+      {% for block in section.blocks %}
+        <div class="job-listing">
+          <!-- Job Info on the left -->
+          <div class="job-info">
+            <h2 class="job-title">{{ block.settings.job_title }}</h2>
+            <div class="job-meta">
+              <span class="job-address">{{ block.settings.job_address }}</span>,
+              <span class="job-city">{{ block.settings.job_city }}</span>
+            </div>
+          </div>
+          <!-- Apply Button on the right -->
+          <div class="job-action">
+            <button class="btn apply-btn" data-job-title="{{ block.settings.job_title }}">Apply</button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- No Jobs Available Message -->
+    <div class="no-jobs-message animated fadeInUp">
+      <span class="no-jobs-text">We currently have no job openings</span>
+      <button class="close-no-jobs" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+  {% endif %}
+
+  <!-- Job Application Popup Form -->
+  <div class="job-popup-form">
+    <div class="form-container animated">
+      <span class="close-popup"><i class="fas fa-times-circle"></i></span>
+      <h2 id="popup-job-title">Apply for: <span></span></h2>
+
+      {%- assign form_id = 'contact-' | append: section.id -%}
+      {%- form 'contact', id: form_id, enctype: "multipart/form-data" -%}
+
+      <!-- Form Fields -->
+      <input type="hidden" name="contact[body]" value="Applying for: {{ job_title }}" />
+      <input type="hidden" name="form_type" value="contact" />
+
+      <label for="applicant-name">Your Name</label>
+      <input type="text" id="applicant-name" name="contact[name]" class="full-width" required>
+
+      <label for="applicant-email">Your Email</label>
+      <input type="email" id="applicant-email" name="contact[email]" class="full-width" required>
+
+      <label for="applicant-phone">Your Phone</label>
+      <input type="tel" id="applicant-phone" name="contact[phone]" class="full-width" pattern="[0-9\-]*" required>
+
+      <label for="applicant-cv">Upload Your CV</label>
+      <input type="file" id="applicant-cv" name="contact[cv]" accept=".pdf,.doc,.docx" class="full-width">
+
+      <label for="applicant-message">Cover Letter (Optional)</label>
+      <textarea id="applicant-message" name="contact[body]" rows="5" class="full-width"></textarea>
+
+      <!-- Contact Form Submit Button -->
+      <button type="submit" class="button btn-submit full-width">
+        Submit Application
+      </button>
+
+      {{ form.errors | default_errors }}
+      {% if form.posted_successfully? %}
+        <p class="note note--success">
+          Your application has been submitted successfully. We will be in touch soon!
+        </p>
+      {% endif %}
+
+      {{ 'shopify.online_store.spam_detection.disclaimer_html' | t }}
+      {%- endform -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Job Listings",
+  "settings": [
+    {
+      "type": "text",
+      "id": "job_section_heading",
+      "label": "Job Section Heading",
+      "default": "Apply for a Job"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "job",
+      "name": "Job Position",
+      "settings": [
+        {
+          "type": "text",
+          "id": "job_title",
+          "label": "Job Title",
+          "default": "Web Developer"
+        },
+        {
+          "type": "text",
+          "id": "job_address",
+          "label": "Address",
+          "default": "123 Office St."
+        },
+        {
+          "type": "text",
+          "id": "job_city",
+          "label": "City",
+          "default": "New York"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Job Listings",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .job-popup-form button.btn-submit.full-width {
+    margin: 0;
+  }
+
+  .job-listing-section {
+    padding: 40px 20px;
+  }
+
+  .section-heading {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .section-heading h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .job-listing {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    animation: fadeInUp 1s ease;
+  }
+
+  .job-info {
+    flex: 1;
+  }
+
+  .job-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 10px;
+  }
+
+  .job-meta {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .apply-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .apply-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .job-popup-form {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .form-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 80%;
+    overflow-y: auto;
+    animation: fadeInDown 0.5s ease;
+  }
+
+  .form-container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .close-popup {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .job-listing {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .job-action {
+      margin-top: 15px;
+    }
+
+    .job-title {
+      font-size: 20px;
+    }
+
+    .job-meta {
+      font-size: 12px;
+    }
+
+    .form-container {
+      width: 90%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .job-title {
+      font-size: 18px;
+    }
+
+    .apply-btn {
+      padding: 8px 15px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const applyButtons = document.querySelectorAll('.apply-btn');
+    const popupForm = document.querySelector('.job-popup-form');
+    const closePopup = document.querySelector('.close-popup');
+    const jobTitleElement = document.querySelector('#popup-job-title span');
+
+    applyButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const jobTitle = this.getAttribute('data-job-title');
+        jobTitleElement.textContent = jobTitle;
+        popupForm.style.display = 'flex';
+      });
+    });
+
+    closePopup.addEventListener('click', function() {
+      popupForm.style.display = 'none';
+    });
+
+    document.addEventListener('click', function(event) {
+      if (!popupForm.contains(event.target) && !event.target.closest('.apply-btn')) {
+        popupForm.style.display = 'none';
+      }
+    });
+  });
+</script>
